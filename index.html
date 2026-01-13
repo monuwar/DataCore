@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TELEFY</title>
+    <!-- Bebas Neue Font Support -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-main: #ffffff;
+            --glow-yellow: #FFD700; 
+            --glow-red: #FF0033;    
+            --lock-safe: #00ff9d;   
+            --lock-edit: #ff0f4b;
+            --sync-blue: #00C6FF;
+            --bg-deep: #020617;
+        }
+
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            margin: 0; padding: 0;
+            color: var(--text-main);
+            font-family: 'Bebas Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+            letter-spacing: 1px;
+        }
+
+        /* --- Header --- */
+        .app-header { padding: 60px 0 30px 0; text-align: center; }
+
+        /* --- LOGO MODIFIED --- */
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 78px; /* ফন্ট সাইজ কিছুটা কমানো হয়েছে */
+            font-weight: normal;
+            line-height: 1;
+            color: #ffffff;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+            display: inline-block;
+            /* উচ্চতা (Vertical Scale) ১.৪ থেকে ১.২৫ এ নামানো হয়েছে মডিফিকেশনের জন্য */
+            transform: scale(1.1, 1.25); 
+            clip-path: ellipse(130% 100% at 50% 10%);
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+        }
+
+        /* Scattered Copy Vector Icons */
+        .decor-icon {
+            position: absolute;
+            color: #ffffff;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .icon-1 { top: -25px; left: -60px; transform: rotate(-20deg) scale(1.5); }
+        .icon-2 { bottom: -5px; right: -50px; transform: rotate(15deg) scale(1.7); }
+        .icon-3 { top: 30px; right: -70px; transform: rotate(40deg) scale(1.1); }
+        .icon-4 { top: -40px; right: 40px; transform: rotate(-12deg) scale(1.3); }
+        .icon-5 { bottom: 0px; left: -75px; transform: rotate(110deg) scale(1.2); }
+
+        /* --- Lock Toggle --- */
+        .lock-wrapper { display: flex; justify-content: center; margin-bottom: 25px; }
+        .cyber-toggle {
+            position: relative; width: 250px; height: 50px;
+            background: #020617; border-radius: 50px; border: 1px solid #1e293b;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; overflow: hidden; transition: 0.4s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+        
+        .cyber-toggle:not(.unlocked) { border-color: var(--lock-safe); }
+        .cyber-toggle.unlocked { border-color: var(--lock-edit); }
+
+        .toggle-text { 
+            position: relative; z-index: 2; font-size: 18px; font-weight: bold; 
+            letter-spacing: 2px; text-transform: uppercase; 
+        }
+        .cyber-toggle:not(.unlocked) .toggle-text { color: var(--lock-safe); }
+        .cyber-toggle.unlocked .toggle-text { color: var(--lock-edit); }
+
+        /* --- Action Buttons --- */
+        .action-section { padding: 10px 20px; width: 100%; max-width: 500px; margin: 0 auto 20px auto; }
+        .action-list { display: flex; flex-direction: column; gap: 15px; }
+
+        .cyber-btn {
+            width: 100%; padding: 20px 25px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 20px; text-transform: uppercase;
+            color: #fff; cursor: pointer; position: relative;
+            background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.2s; backdrop-filter: blur(5px);
+        }
+        .cyber-btn.has-data { border: 1px solid var(--glow-yellow); }
+        .cyber-btn.has-data span { color: var(--glow-yellow); }
+        .cyber-btn.has-data .count-bubble { background: var(--glow-red); color: #fff; }
+        .cyber-btn.empty { opacity: 0.3; pointer-events: none; border-style: dashed; }
+        
+        .count-bubble { 
+            background: #1e293b; color: #94a3b8; padding: 4px 12px; 
+            border-radius: 4px; font-size: 16px; min-width: 40px; text-align: center; 
+        }
+
+        .rename-input { 
+            width: 100%; padding: 18px; border-radius: 12px; background: #0f172a; 
+            border: 1px solid #334155; color: #fff; font-family: 'Bebas Neue', sans-serif;
+            text-align: center; text-transform: uppercase; font-size: 18px; 
+        }
+        .rename-input:focus { border-color: var(--glow-yellow); }
+
+        /* --- Cards Section --- */
+        .cards-section { padding: 0 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+        .card { background: #020617; border: 1px solid #1e293b; border-radius: 16px; padding: 20px; margin-bottom: 25px; }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 16px; color: #64748b; }
+        
+        .input-wrapper { position: relative; width: 100%; height: 160px; background: #000; border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; }
+        .input-area { 
+            width: 100%; height: 100%; background: transparent; border: none; 
+            color: #ccc; padding: 15px; font-family: 'Bebas Neue', sans-serif; 
+            font-size: 18px; resize: none; 
+        }
+        
+        .privacy-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+        .mask-filled { background: #000; }
+        .mask-text { color: var(--glow-yellow); font-size: 18px; margin-top: 5px; }
+        
+        .card-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
+        .tool-btn { 
+            background: #1e293b; border: 1px solid #334155; color: #fff; 
+            padding: 8px 16px; border-radius: 8px; font-size: 15px; cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+        }
+
+        .footer { padding: 40px; text-align: center; color: #475569; font-size: 14px; }
+        .footer a { color: #64748b; text-decoration: none; }
+
+        @keyframes flashEffect { 0% { background: #fff; color: #000; } 100% { background: transparent; } }
+        .clicked { animation: flashEffect 0.2s ease-out; }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="logo-container">
+            <div class="decor-icon icon-1"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+            <div class="decor-icon icon-2"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+            <div class="decor-icon icon-3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+            <div class="decor-icon icon-4"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+            <div class="decor-icon icon-5"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+            
+            <div class="logo">TELEFY</div>
+        </div>
+        
+        <div class="lock-wrapper">
+            <div class="cyber-toggle" id="lockToggle">
+                <span class="toggle-text" id="lockText">SYSTEM LOCKED</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-section">
+        <div class="action-list" id="actionBar"></div>
+    </div>
+
+    <div class="cards-section" id="cardsContainer"></div>
+
+    <div class="footer">
+        UI DESIGNED BY <a href="https://t.me/Luizzsec">@LUIZZSEC</a>
+    </div>
+
+    <script>
+        const CONFIG = [
+            { id: 'slot1', type: 'Email',  title: 'EMAIL SLOT 1' },
+            { id: 'slot2', type: 'Email',  title: 'EMAIL SLOT 2' },
+            { id: 'slot3', type: 'Email',  title: 'EMAIL SLOT 3' },
+            { id: 'slot4', type: 'Email',  title: 'EMAIL SLOT 4' },
+            { id: 'slot5', type: 'Email',  title: 'EMAIL SLOT 5' },
+            { id: 'slot6', type: 'Name',   title: 'NAME LIST' },
+            { id: 'slot7', type: 'Number', title: 'NUMBER LIST' }
+        ];
+
+        let appState = { locked: true, data: {} };
+
+        window.onload = () => { loadLocalData(); };
+
+        function loadLocalData() {
+            const localData = localStorage.getItem('telefy_local_v1');
+            if (localData) appState.data = JSON.parse(localData);
+            else resetData();
+            render();
+        }
+
+        function saveData() {
+            localStorage.setItem('telefy_local_v1', JSON.stringify(appState.data));
+        }
+
+        function resetData() {
+            appState.data = {};
+            CONFIG.forEach(item => { appState.data[item.id] = { title: item.title, content: "" }; });
+            saveData();
+        }
+
+        function doCopy(text) {
+            const txt = document.createElement('textarea');
+            txt.value = text; document.body.appendChild(txt);
+            txt.select(); document.execCommand('copy');
+            document.body.removeChild(txt);
+        }
+
+        function render() { 
+            renderHeader(); 
+            renderButtons(); 
+            renderCards(); 
+        }
+
+        function renderHeader() {
+            const text = document.getElementById('lockText');
+            text.innerText = appState.locked ? 'SYSTEM LOCKED' : 'EDIT MODE ACTIVE';
+            document.getElementById('lockToggle').className = appState.locked ? 'cyber-toggle' : 'cyber-toggle unlocked';
+        }
+
+        function renderButtons() {
+            const container = document.getElementById('actionBar');
+            container.innerHTML = '';
+            CONFIG.forEach(item => {
+                const itemData = appState.data[item.id] || { title: item.title, content: "" };
+                const count = getCount(itemData.content);
+                const hasData = count > 0;
+
+                if (appState.locked) {
+                    const btn = document.createElement('button');
+                    btn.className = `cyber-btn ${hasData ? 'has-data' : 'empty'}`;
+                    btn.id = `btn-${item.id}`;
+                    btn.innerHTML = `<span>${itemData.title}</span><span class="count-bubble">${count}</span>`;
+                    if(hasData) btn.onclick = () => copyItem(item.id);
+                    container.appendChild(btn);
+                } else {
+                    const input = document.createElement('input');
+                    input.className = 'rename-input';
+                    input.value = itemData.title;
+                    input.oninput = (e) => { appState.data[item.id].title = e.target.value.toUpperCase(); saveData(); };
+                    container.appendChild(input);
+                }
+            });
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            CONFIG.forEach(item => {
+                const itemData = appState.data[item.id] || { title: item.title, content: "" };
+                const hasData = getCount(itemData.content) > 0;
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header"><span>${itemData.title}</span><span>${item.type.toUpperCase()}</span></div>
+                    <div class="input-wrapper">
+                        <div class="privacy-mask ${hasData ? 'mask-filled' : ''}" style="display: ${appState.locked ? 'flex' : 'none'}">
+                            <div class="mask-text">${hasData ? 'DATA HIDDEN' : 'EMPTY'}</div>
+                        </div>
+                        <textarea class="input-area" style="display: ${appState.locked ? 'none' : 'block'}" oninput="updateData('${item.id}', this.value)">${itemData.content}</textarea>
+                    </div>
+                    <div class="card-actions" style="display: ${appState.locked ? 'none' : 'flex'}">
+                        <input type="file" id="file-${item.id}" hidden accept=".txt" onchange="uploadFile('${item.id}', this)">
+                        <button class="tool-btn" onclick="document.getElementById('file-${item.id}').click()">UPLOAD</button>
+                        <button class="tool-btn" onclick="clearData('${item.id}')">CLEAR</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('lockToggle').addEventListener('click', () => { appState.locked = !appState.locked; render(); });
+        window.updateData = (id, val) => { appState.data[id].content = val; saveData(); };
+        window.copyItem = (id) => {
+            const content = appState.data[id].content;
+            if(!content) return;
+            const lines = content.split(/\r?\n/).filter(l => l.trim() !== "");
+            if(lines.length === 0) return;
+            doCopy(lines[0]);
+            appState.data[id].content = lines.slice(1).join("\n");
+            saveData(); render();
+            const btn = document.getElementById(`btn-${id}`);
+            if(btn) { btn.classList.add('clicked'); setTimeout(() => btn.classList.remove('clicked'), 200); }
+        };
+        window.clearData = (id) => { appState.data[id].content = ""; saveData(); render(); };
+        window.uploadFile = (id, input) => {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                appState.data[id].content = (appState.data[id].content + "\n" + e.target.result).trim();
+                saveData(); render();
+            };
+            reader.readAsText(file);
+        };
+        function getCount(txt) { if(!txt) return 0; return txt.split(/\r?\n/).filter(l => l.trim() !== "").length; }
+    </script>
+</body>
+</html>
